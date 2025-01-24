@@ -19,8 +19,8 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          region: us-east-1
+        env:
+         AWS_DEFAULT_REGION: us-east-1
 
       # Step 3: Build and push the Docker image
       - name: Build and Push Docker Image
