@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - app/** # Trigger when any file in the app directory is updated
+      - .github/**
 
 jobs:
   build-push-and-deploy:
