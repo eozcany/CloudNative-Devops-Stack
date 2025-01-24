@@ -11,11 +11,9 @@ jobs:
     runs-on: arc  # Your self-hosted runner in the EKS cluster
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Install AWS CLI (if not already present on the runner)
       - name: Install AWS CLI
         run: |
           sudo apt-get update && sudo apt-get install -y curl unzip
@@ -23,44 +21,33 @@ jobs:
           unzip awscliv2.zip
           sudo ./aws/install
 
-      # Step 3: Log in to Amazon ECR using the self-hosted runner's IAM role
       - name: Login to Amazon ECR
         id: ecr-login
         run: |
-          # Configure AWS region (adjust if not us-east-1)
           aws configure set region us-east-1
-
-          # Retrieve ECR registry URI (based on the current AWS account)
           ECR_REGISTRY="$(aws sts get-caller-identity --query 'Account' --output text).dkr.ecr.us-east-1.amazonaws.com"
-
-          # Docker login to ECR
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"
-
-          # Export $ECR_REGISTRY so later steps can use it
           echo "ECR_REGISTRY=$ECR_REGISTRY" >> "$GITHUB_ENV"
 
-      # Step 4: Build and push the Docker image
       - name: Build and Push Docker Image
         env:
           REPOSITORY: reversed-ip
           IMAGE_TAG: ${{ github.sha }}
         run: |
           cd app
-
-          # Build the Docker image
           docker build -t $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7} .
-
-          # Push the Docker image
           docker push $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7}
 
-      # Step 5: Deploy with Helm
+      # ----- INSTALL HELM -----
+      - name: Install Helm
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
       - name: Deploy with Helm
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           cd helm/charts/reversed-ip
-
-          # Use the ECR registry and tag from earlier steps
           helm upgrade --install reversed-ip . \
             --set image.repository=$ECR_REGISTRY/reversed-ip \
             --set image.tag=${IMAGE_TAG:0:7} \
