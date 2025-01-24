@@ -1,0 +1,31 @@
+##############################################################################
+# Actions Runner Chart Values
+##############################################################################
+authSecret:
+  enabled: true
+  create: true
+  name: "actions-runner-auth"
+  github_token: "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"
+runner:
+  replicas: 1
+  group: "self-hosted"
+  labels: "eks"
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+serviceAccount:
+  name: "actions-runner"
+rbac:
+  create: true
+  allowGrantingKubernetesContainerModePermissions: true
+  rules:
+  - apiGroups: ["*"]
+    resources: ["0"]
+    verbs: ["*"]
+
+scope:
+  singleNamespace: false

@@ -43,6 +43,7 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+      # ----- DEPLOY WITH HELM -----
       - name: Deploy with Helm
         env:
           IMAGE_TAG: ${{ github.sha }}

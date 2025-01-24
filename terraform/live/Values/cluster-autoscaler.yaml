@@ -1,0 +1,32 @@
+autoDiscovery:
+  clusterName: reversed-ip-eks
+
+  # autoDiscovery.tags -- ASG tags to match, run through `tpl`.
+  tags:
+    - k8s.io/cluster-autoscaler/enabled
+    - k8s.io/cluster-autoscaler/reversed-ip-eks
+  roles:
+    - worker
+
+extraArgs:
+  logtostderr: true
+  stderrthreshold: info
+  v: 4
+
+awsRegion: us-east-1
+cloudProvider: aws
+image:
+  repository: registry.k8s.io/autoscaling/cluster-autoscaler
+  tag: v1.30.0
+  pullPolicy: IfNotPresent
+
+rbac:
+  create: true
+  pspEnabled: false
+  clusterScoped: true
+  serviceAccount:
+    create: true
+    name: "cluster-autoscaler"
+    automountServiceAccountToken: true
+
+replicaCount: 1

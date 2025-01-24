@@ -1,0 +1,23 @@
+replicaCount: 1
+
+cluster:
+    # Cluster DNS domain (required for requesting TLS certificates)
+    dnsDomain: cluster.local
+
+region: us-east-1
+
+serviceAccount:
+# If not set and create is true, a name is generated using the fullname template
+  name: alb-ingress
+
+# Enable WAF addon for ALB (default true)
+enableWaf: false
+
+# Enable WAF V2 addon for ALB (default true)
+enableWafv2: false
+
+# enableBackendSecurityGroup enables shared security group for backend traffic (default true)
+enableBackendSecurityGroup: false
+
+# Enable Shield addon for ALB (default true)
+enableShield: false
