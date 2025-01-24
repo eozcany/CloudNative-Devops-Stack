@@ -1,4 +1,4 @@
-name: Build, Push Docker Image, and Deploy with Helm
+name: Build, Push Docker Image, and Deploy reversed-ip with Helm
 
 on:
   push:

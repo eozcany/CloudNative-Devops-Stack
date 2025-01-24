@@ -26,13 +26,15 @@ externalSecret:
   refreshInterval: 1h
   secretStoreRef: reversed-ip-secret-store
 
-mysql:
-  host: "mysql.default.svc.cluster.local"
-  auth:
-    rootPassword: "Passw0rd!"
-    username: "reversed_user"
-    password: "Passw0rd!"
-    database: "reversed_ip_db"
-  primary:
-    persistence:
-      enabled: false
+
+# Horizontal Pod Autoscaler
+hpa:
+  minReplicas: 1
+  maxReplicas: 5
+  cpuTargetUtilization: 80
+  memoryTargetUtilization: 70
+
+# Pod Disruption Budget
+
+pdb:
+  minAvailable: 1
