@@ -8,46 +8,59 @@ on:
 
 jobs:
   build-push-and-deploy:
-    runs-on: arc  # Your self-hosted runner name in the EKS cluster
+    runs-on: arc  # Your self-hosted runner in the EKS cluster
 
     steps:
       # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Login to Amazon ECR (this uses the runner's IAM role)
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        env:
-         AWS_DEFAULT_REGION: us-east-1
+      # Step 2: Install AWS CLI (if not already present on the runner)
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update && sudo apt-get install -y curl unzip
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
 
-      # Step 3: Build and push the Docker image
+      # Step 3: Log in to Amazon ECR using the self-hosted runner's IAM role
+      - name: Login to Amazon ECR
+        id: ecr-login
+        run: |
+          # Configure AWS region (adjust if not us-east-1)
+          aws configure set region us-east-1
+
+          # Retrieve ECR registry URI (based on the current AWS account)
+          ECR_REGISTRY="$(aws sts get-caller-identity --query 'Account' --output text).dkr.ecr.us-east-1.amazonaws.com"
+
+          # Docker login to ECR
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+          # Export $ECR_REGISTRY so later steps can use it
+          echo "ECR_REGISTRY=$ECR_REGISTRY" >> "$GITHUB_ENV"
+
+      # Step 4: Build and push the Docker image
       - name: Build and Push Docker Image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: reversed-ip              # Your ECR repo name
-          IMAGE_TAG: ${{ github.sha }}         # Use commit SHA as the tag
+          REPOSITORY: reversed-ip
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Navigate to the app directory
           cd app
 
           # Build the Docker image
           docker build -t $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7} .
 
-          # Push the Docker image to ECR
+          # Push the Docker image
           docker push $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7}
 
-      # Step 4: Deploy with Helm
+      # Step 5: Deploy with Helm
       - name: Deploy with Helm
         env:
           IMAGE_TAG: ${{ github.sha }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          # Navigate to your Helm chart directory
           cd helm/charts/reversed-ip
 
-          # Install or upgrade your release
+          # Use the ECR registry and tag from earlier steps
           helm upgrade --install reversed-ip . \
             --set image.repository=$ECR_REGISTRY/reversed-ip \
             --set image.tag=${IMAGE_TAG:0:7} \
