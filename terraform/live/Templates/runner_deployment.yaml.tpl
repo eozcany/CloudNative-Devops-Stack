@@ -8,6 +8,7 @@ spec:
   template:
     spec:
       repository: "${repository}"
+      serviceAccountName: actions-runner
       labels:
 %{ for label in labels ~}
       - ${label}

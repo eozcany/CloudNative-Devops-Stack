@@ -38,7 +38,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7} .
           docker push $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7}
 
-      # ----- INSTALL HELM -----
+      # ----- Deploy Reverse-ip Into the Kubernetes via Helm-----
       - name: Install Helm
         run: |
           curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash

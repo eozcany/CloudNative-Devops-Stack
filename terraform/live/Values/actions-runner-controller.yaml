@@ -22,10 +22,6 @@ serviceAccount:
 rbac:
   create: true
   allowGrantingKubernetesContainerModePermissions: true
-  rules:
-  - apiGroups: ["*"]
-    resources: ["0"]
-    verbs: ["*"]
 
 scope:
   singleNamespace: false

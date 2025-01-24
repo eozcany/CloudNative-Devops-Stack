@@ -61,6 +61,39 @@ resource "helm_release" "actions_runner_controller" {
   }
 }
 
+##############################################################################
+# Runner Deployment
+##############################################################################
+resource "kubernetes_cluster_role" "runner_cluster_role" {
+  metadata {
+    name = "runner-cluster-role"
+  }
+
+  rule {
+    api_groups = ["*"]        # Apply to all API groups
+    resources  = ["*"]        # Apply to all resources
+    verbs      = ["*"]        # Allow all verbs (actions)
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "runner_cluster_role_binding" {
+  metadata {
+    name = "runner-cluster-role-binding"
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = "actions-runner" # Replace with your service account name
+    namespace = helm_release.actions_runner_controller.namespace         # Namespace where the service account is located
+  }
+
+  role_ref {
+    kind     = "ClusterRole"
+    name     = kubernetes_cluster_role.runner_cluster_role.metadata[0].name # Reference the created ClusterRole
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
 resource "kubectl_manifest" "runner_deployment" {
   depends_on = [ helm_release.actions_runner_controller ]
 
@@ -71,3 +104,4 @@ resource "kubectl_manifest" "runner_deployment" {
     repository           = "eozcany/reversed-ip"
   })
 }
+
