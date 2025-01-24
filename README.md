@@ -57,6 +57,7 @@ Before deploying the app, ensure the following are installed:
 - [Helm](https://helm.sh/)
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [AWS Profile](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html)
+- [Github PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 
 ### Step-by-Step Local Deployment Guide
 
