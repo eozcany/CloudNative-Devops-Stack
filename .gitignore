@@ -1,0 +1,12 @@
+# Ignore the specific path
+helm/charts/reversed-ip/charts/*
+
+# Ignore all Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Allow Terraform state files in specific folders
+!*/.terraform/*
+!*.tfstate
+!*.tfstate.*
+.terraform/

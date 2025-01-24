@@ -1,0 +1,24 @@
+# Node.js app deployment config
+image:
+  repository: reversed-ip
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+app:
+  port: 3000
+
+# MySQL config
+mysql:
+  host: "reversed-ip-mysql.default.svc.cluster.local"
+  auth:
+    rootPassword: "Passw0rd!"
+    username: "reversed_user"
+    password: "Passw0rd!"
+    database: "reversed_ip_db"
+  primary:
+    persistence:
+      enabled: false

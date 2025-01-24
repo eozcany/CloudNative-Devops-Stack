@@ -1,0 +1,38 @@
+# Node.js app config
+local:
+  enabled: false
+image:
+  repository: reversed-ip
+  tag: "1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+app:
+  port: 3000
+
+## ExternalSecret
+externalSecret:
+  dataFrom:
+    key: reversed-ip
+    conversionStrategy: Default
+    decodingStrategy: None
+    metadataPolicy: None
+  target:
+    creationPolicy: Owner
+    deletionPolicy: Delete
+  refreshInterval: 1h
+  secretStoreRef: reversed-ip-secret-store
+
+mysql:
+  host: "mysql.default.svc.cluster.local"
+  auth:
+    rootPassword: "Passw0rd!"
+    username: "reversed_user"
+    password: "Passw0rd!"
+    database: "reversed_ip_db"
+  primary:
+    persistence:
+      enabled: false

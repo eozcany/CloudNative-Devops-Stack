@@ -1,0 +1,51 @@
+name: Build, Push Docker Image, and Deploy with Helm
+
+on:
+  push:
+    paths:
+      - app/** # Trigger when any file in the app directory is updated
+
+jobs:
+  build-push-and-deploy:
+    runs-on: arc # Use the self-hosted runner in your EKS cluster
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Login to Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Step 3: Build and push the Docker image
+      - name: Build and Push Docker Image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: reversed-ip # Replace with your ECR repository name
+          IMAGE_TAG: ${{ github.sha }} # Short commit SHA as the image tag
+        run: |
+          # Navigate to the app directory
+          cd app
+
+          # Build the Docker image
+          docker build -t $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7} .
+
+          # Push the Docker image to ECR
+          docker push $ECR_REGISTRY/$REPOSITORY:${IMAGE_TAG:0:7}
+
+      # Step 4: Deploy with Helm
+      - name: Deploy with Helm
+        env:
+          IMAGE_TAG: ${{ github.sha }} # Short commit SHA as the image tag
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Navigate back to the main project directory
+          cd helm/charts/reversed-ip
+
+          # Install or upgrade the Helm release
+          helm upgrade --install reversed-ip . \
+            --set image.repository=$ECR_REGISTRY/reversed-ip \
+            --set image.tag=${IMAGE_TAG:0:7} \
+            --namespace reversed-ip
