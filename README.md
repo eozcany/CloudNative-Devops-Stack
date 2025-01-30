@@ -14,6 +14,7 @@ Before deploying the app, ensure the following are installed:
 - [Helm](https://helm.sh/)
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/)
 
+
 ---
 
 ### Step-by-Step Local Deployment Guide
