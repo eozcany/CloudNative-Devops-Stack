@@ -117,18 +117,12 @@ terraform apply
 - IAM Management: IRSA Roles with least permissions trusted only apps on defined namespaces
 
 
-## Possible Improvements Neglected by time and cost boundary
+## Future Plannings
 
-- Argo CD could be used to deploy reversed-ip app if an image pushed to the ECR Registy
+- Argo CD Integration
 
-- Github APP could be used instead PAT (Github Personel Access Token) to deploying Actions Runner Controller on K8s
+- Github APP replacement with PAT
 
-- Karpenter could be used instead Cluster Autoscaler
+- Karpenter replacement with Cluster Autoscaler
 
-- RDS could be used as a DB instead Mysql K8s Deployment
 
-- K8s Resource Limits/Request could be adjusted for all helm and k8s deployments
-
-- Actions Runner RBAC could be optimized according to Least Permission Principle
-
-- S3 backend could be used for Terraform.
