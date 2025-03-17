@@ -1,7 +1,9 @@
 
 # Reversed-IP App
 
-The **Reversed-IP App** is a Node.js application deployed locally using Docker and Kubernetes. This guide provides a step-by-step process for deploying the app along with its dependencies (MySQL) using Helm.
+The **Reversed-IP App** is an example a Node.js application deployed locally using Docker and Kubernetes. This guide provides a step-by-step process for deploying the app along with its dependencies (MySQL) using Helm. 
+
+You can just replace it with your application.
 
 ## Local Deployment 
 
@@ -45,10 +47,6 @@ kubectl port-forward svc/local-reversed-ip 8000:80
 ```
 
 Open the browser hit http://localhost:8000/
-
-## AWS EKS Deployment 
-
-[https://reversed-ip.hyprime.io](https://reversed-ip.hyprime.io/)
 
 ### Prerequisites
 
