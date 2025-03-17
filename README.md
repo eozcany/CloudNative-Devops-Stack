@@ -1,5 +1,5 @@
 
-# Reversed-IP App
+# CloudNative DevOps Stack
 
 The **Reversed-IP App** is an example a Node.js application deployed locally using Docker and Kubernetes. This guide provides a step-by-step process for deploying the app along with its dependencies (MySQL) using Helm. 
 
